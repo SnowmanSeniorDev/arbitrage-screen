@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -13,6 +14,16 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
+    }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'db',
+      port: 5432,
+      username: 'postgres',
+      password: 'postgres',
+      database: 'postgres',
+      autoLoadEntities: true,
+      synchronize: true
     }),
     UsersModule,
     AuthModule,
