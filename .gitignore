@@ -41,3 +41,7 @@ logs
 # Tests
 */coverage
 */.nyc_output
+
+# Visual Studio Code Settings
+.vscode
+*/.vscode

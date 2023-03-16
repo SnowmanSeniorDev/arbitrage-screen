@@ -9,12 +9,14 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configSchemaValidation } from './config.schema';
-
+import * as Configs from './config';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath: [`stage.${process.env.STAGE}.env`],
-      validationSchema: configSchemaValidation
+      load: Object.values(Configs),
+      validationSchema: configSchemaValidation,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -28,9 +30,9 @@ import { configSchemaValidation } from './config.schema';
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_DATABASE'),
           autoLoadEntities: true,
-          synchronize: true
-        }
-      }
+          synchronize: true,
+        };
+      },
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -45,7 +47,7 @@ import { configSchemaValidation } from './config.schema';
       password: 'postgres',
       database: 'postgres',
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: true,
     }),
     UsersModule,
     AuthModule,
