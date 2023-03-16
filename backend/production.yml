@@ -1,4 +1,4 @@
 services:
   app:
     build:
-      target: test
+      target: prod
