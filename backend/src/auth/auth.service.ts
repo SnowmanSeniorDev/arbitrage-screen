@@ -1,17 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { AuthLoginInput, AuthRegisterInput } from './dto/auth.input';
-
+import { User } from 'src/users/entities/user.entity';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { loginResult } from './dto/auth.output';
 @Injectable()
 export class AuthService {
-  constructor(private UsersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private configService: ConfigService,
+    private jwtService: JwtService,
+  ) {}
 
-  async register(registerInput: AuthRegisterInput) {
-    const user = await this.UsersService.create(registerInput);
-    return user
+  async register(registerInput: AuthRegisterInput): Promise<loginResult> {
+    const user = await this.usersService.create(registerInput);
+    const { authToken } = await this.createToken(user);
+    return { user, authToken };
   }
 
-  login(loginInput: AuthLoginInput) {
-    console.log('login service');
+  async login(loginInput: AuthLoginInput): Promise<loginResult> {
+    const user = await this.usersService.findOne(loginInput.email);
+    if (user) {
+      const { authToken } = this.createToken(user);
+      return { user, authToken };
+    }
+  }
+
+  createToken(user: User): { authToken: string } {
+    const expiresIn = this.configService.get('jwt.expiresIn');
+    const secret = this.configService.get('jwt.secret');
+    const data = { email: user.email };
+    const token = this.jwtService.sign(data, { expiresIn, secret });
+
+    return {
+      authToken: token,
+    };
   }
 }
