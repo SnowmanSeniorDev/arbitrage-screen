@@ -10,4 +10,8 @@ export const configSchemaValidation = Joi.object({
   DB_DATABASE: Joi.string().required(),
   JWT_SECRET: Joi.string().default('my-secret-key').required(),
   JWT_EXPIRES_IN: Joi.number().required(),
+  MAIL_HOST: Joi.string().default('smtp.sendgrid.net').required(),
+  MAIL_USER: Joi.string().default('apikey').required(),
+  MAIL_PASS: Joi.string().required(),
+  MAIL_FROM: Joi.string().email().required(),
 });
