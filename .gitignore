@@ -45,3 +45,5 @@ logs
 # Visual Studio Code Settings
 .vscode
 */.vscode
+
+*/*.env
