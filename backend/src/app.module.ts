@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { join } from 'path';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { UtilsModule } from './utils/utils.module';
 import { configSchemaValidation } from './config.schema';
 import * as Configs from './config';
 @Module({
@@ -49,6 +50,7 @@ import * as Configs from './config';
       autoLoadEntities: true,
       synchronize: true,
     }),
+    UtilsModule,
     UsersModule,
     AuthModule,
   ],
