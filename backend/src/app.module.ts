@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheInterceptor, CacheModule } from '@nestjs/common';
 import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -11,8 +11,21 @@ import { AuthModule } from './auth/auth.module';
 import { UtilsModule } from './utils/utils.module';
 import { configSchemaValidation } from './config.schema';
 import * as Configs from './config';
+import { redisStore } from 'cache-manager-redis-store';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 @Module({
   imports: [
+    CacheModule.register({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        return {
+          store: redisStore,
+          host: configService.get('redis.host'),
+          port: configService.get('redis.port'),
+        };
+      },
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [`stage.${process.env.STAGE}.env`],
@@ -40,21 +53,17 @@ import * as Configs from './config';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'db',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'postgres',
-      autoLoadEntities: true,
-      synchronize: true,
-    }),
     UtilsModule,
     UsersModule,
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
+  ],
 })
 export class AppModule {}
