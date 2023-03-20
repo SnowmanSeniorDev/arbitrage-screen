@@ -1,5 +1,5 @@
 #syntax:docker/dockerfile:1
-FROM node:16.14.2-alpine as base
+FROM node:18.15.0-alpine as base
 
 WORKDIR /app
 COPY ["package.json", "yarn.lock", "./"]

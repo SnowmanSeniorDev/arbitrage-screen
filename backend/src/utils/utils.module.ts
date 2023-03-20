@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { RedisModule } from 'nestjs-redis';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
@@ -28,12 +27,6 @@ import { join } from 'path';
           },
         },
       }),
-      inject: [ConfigService],
-    }),
-    RedisModule.forRootAsync({
-      useFactory: (configService: ConfigService) => configService.get('redis'),
-      // or use async method
-      //useFactory: async (configService: ConfigService) => configService.get('redis'),
       inject: [ConfigService],
     }),
   ],
