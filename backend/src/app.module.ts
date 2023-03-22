@@ -1,4 +1,4 @@
-import { Module, CacheInterceptor, CacheModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { join } from 'path';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -11,19 +11,8 @@ import { AuthModule } from './auth/auth.module';
 import { UtilsModule } from './utils/utils.module';
 import { configSchemaValidation } from './config.schema';
 import * as Configs from './config';
-import { redisStore } from 'cache-manager-redis-store';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 @Module({
   imports: [
-    CacheModule.register({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        store: redisStore,
-        host: configService.get('redis.host'),
-        port: configService.get('redis.port'),
-      }),
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [`stage.${process.env.STAGE}.env`],

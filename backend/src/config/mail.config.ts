@@ -5,4 +5,5 @@ export default registerAs('mail', () => ({
   user: process.env.MAIL_USER,
   pass: process.env.MAIL_PASS,
   from: process.env.MAIL_FROM,
+  cacheTTL: process.env.MAIL_CACHE_TTL,
 }));

@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
-import { AuthLoginInput, AuthRegisterInput } from './dto/auth.input';
-import { User } from 'src/users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
+import { AuthLoginInput, AuthRegisterInput } from './dto/auth.input';
+import { User } from '../users/entities/user.entity';
 import { loginResult } from './dto/auth.output';
 import { MailService } from '../utils/services/mail.service';
+import { CacheService } from '../utils/services/cache.service';
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private configService: ConfigService,
-    private jwtService: JwtService,
-    private mailService: MailService,
+    private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
+    private readonly cacheService: CacheService,
   ) {}
 
   async register(registerInput: AuthRegisterInput): Promise<loginResult> {
