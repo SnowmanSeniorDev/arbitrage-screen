@@ -5,17 +5,20 @@ import { User } from 'src/users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { loginResult } from './dto/auth.output';
+import { MailService } from '../utils/services/mail.service';
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private configService: ConfigService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async register(registerInput: AuthRegisterInput): Promise<loginResult> {
     const user = await this.usersService.create(registerInput);
     const { authToken } = await this.createToken(user);
+    await this.mailService.sendVerificationEmail(user.email, authToken);
     return { user, authToken };
   }
 
