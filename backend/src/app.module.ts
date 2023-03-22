@@ -18,13 +18,11 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     CacheModule.register({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
-        return {
-          store: redisStore,
-          host: configService.get('redis.host'),
-          port: configService.get('redis.port'),
-        };
-      },
+      useFactory: async (configService: ConfigService) => ({
+        store: redisStore,
+        host: configService.get('redis.host'),
+        port: configService.get('redis.port'),
+      }),
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -35,18 +33,16 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
-        return {
-          type: 'postgres',
-          host: configService.get('DB_HOST'),
-          port: configService.get('DB_PORT'),
-          username: configService.get('DB_USERNAME'),
-          password: configService.get('DB_PASSWORD'),
-          database: configService.get('DB_DATABASE'),
-          autoLoadEntities: true,
-          synchronize: true,
-        };
-      },
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('db.host'),
+        port: configService.get('db.port'),
+        username: configService.get('db.username'),
+        password: configService.get('db.password'),
+        database: configService.get('db.database'),
+        autoLoadEntities: true,
+        synchronize: configService.get('app.env') !== 'production',
+      }),
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -58,12 +54,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
-    },
-  ],
+  providers: [AppService],
 })
 export class AppModule {}
