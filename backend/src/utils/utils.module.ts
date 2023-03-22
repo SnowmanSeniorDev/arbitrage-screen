@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
-import { MailService } from './services/mail.service';
+import { MailService, CacheService } from './services';
+import { redisStore } from 'cache-manager-redis-store';
 
 @Module({
   imports: [
@@ -30,8 +31,18 @@ import { MailService } from './services/mail.service';
       }),
       inject: [ConfigService],
     }),
+    CacheModule.register({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        isGlobal: true,
+        store: redisStore,
+        host: configService.get('redis.host'),
+        port: configService.get('redis.port'),
+        ttl: configService.get('redis.defaultTTL'),
+      }),
+    }),
   ],
-  providers: [MailService],
-  exports: [MailService],
+  providers: [MailService, CacheService],
+  exports: [MailService, CacheService],
 })
 export class UtilsModule {}
