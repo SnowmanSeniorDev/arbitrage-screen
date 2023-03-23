@@ -44,18 +44,17 @@ export class AuthService {
     const { password, isEmailVerified } = matchedUser;
 
     if (!matchedUser) throw new ValidationError(WRONG_LOGIN_EMAIL_CREDENCIAL);
-    const isValidPass = await this.helperService.pwdCompaire(
+    const isValidPwd = await this.helperService.pwdCompaire(
+      loginInput.password,
       password,
-      matchedUser.password,
     );
-    const isUser =
-      (await this.helperService.pwdHash(loginInput.password)) === password;
-    if (!isValidPass)
+    if (!isValidPwd)
       throw new AuthenticationError(WRONG_LOGIN_PASSWORD_CREDENCIAL);
-    if (isUser && isEmailVerified) {
-      const { authToken } = this.createToken(matchedUser);
-      return { user: matchedUser, authToken };
+    if (!isEmailVerified) {
+      // TOODO: return verify the email address response
     }
+    const { authToken } = this.createToken(matchedUser);
+    return { user: matchedUser, authToken };
   }
 
   createToken(user: User): { authToken: string } {
