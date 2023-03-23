@@ -1,6 +1,6 @@
 import { Injectable, Inject, CACHE_MANAGER } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import Cache from 'cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class CacheService {
@@ -9,10 +9,27 @@ export class CacheService {
     private readonly configService: ConfigService,
   ) {}
 
-  async setVerificationEmailToken(key, value): Promise<void> {
-    console.log('mail.cacheTTL: ', this.configService.get('mail.cacheTTL'));
-    await this.cacheManager.put(key, value);
-    const keys = await this.cacheManager.keys();
-    console.log('keys: ', keys);
+  async setVerificationEmailToken(email, token): Promise<boolean> {
+    const IsTokenExist = (await this.cacheManager.get(email)) !== undefined;
+    if (IsTokenExist) return false;
+    await this.cacheManager.set(
+      email,
+      token,
+      this.configService.get('mail.cacheTTL'),
+    );
+    await this.cacheManager.set(
+      token,
+      email,
+      this.configService.get('mail.cacheTTL'),
+    );
+    return true;
+  }
+
+  async verifyEmailToken(email, token): Promise<boolean> {
+    const isVerified = (await this.cacheManager.get(token)) === email;
+    if (!isVerified) return isVerified;
+    await this.cacheManager.del(email);
+    await this.cacheManager.del(token);
+    return isVerified;
   }
 }

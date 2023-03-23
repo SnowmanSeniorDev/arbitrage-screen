@@ -22,7 +22,11 @@ export class User {
   @Field(() => String)
   password: string;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: false })
+  @Field(() => Boolean)
+  isEmailVerified: boolean;
+
+  @Column({ type: 'boolean', default: false })
   @Field(() => Boolean)
   isDeleted: boolean;
 
