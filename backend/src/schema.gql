@@ -25,6 +25,7 @@ type User {
   email: String!
   id: String!
   isDeleted: Boolean!
+  isEmailVerified: Boolean!
   password: String!
 }
 
