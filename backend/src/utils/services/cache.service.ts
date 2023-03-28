@@ -26,7 +26,11 @@ export class CacheService {
   }
 
   async verifyEmailToken(email, token): Promise<boolean> {
-    const isVerified = (await this.cacheManager.get(token)) === email;
+    const storedEmail = await this.cacheManager.get(token);
+    const storedToken = await this.cacheManager.get(email);
+    const isVerified =
+      storedEmail == email && token == storedToken && storedEmail !== undefined;
+    storedToken !== undefined;
     if (!isVerified) return isVerified;
     await this.cacheManager.del(email);
     await this.cacheManager.del(token);

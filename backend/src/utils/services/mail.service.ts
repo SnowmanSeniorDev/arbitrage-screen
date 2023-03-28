@@ -12,7 +12,7 @@ export class MailService {
   async sendVerificationEmail(emailTo: string, token: string): Promise<void> {
     const template = './verification';
     const baseUrl = this.configService.get('app.baseUrl');
-    const context = { baseUrl, token };
+    const context = { baseUrl, token, emailTo };
     return this.mailservice.sendMail({
       to: emailTo,
       subject: 'verify your email address',

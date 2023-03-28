@@ -13,12 +13,17 @@ input AuthRegisterInput {
   password: String!
 }
 
+type LoginResult {
+  authToken: String
+  user: User
+}
+
 type Mutation {
-  register(input: AuthRegisterInput!): loginResult!
+  register(input: AuthRegisterInput!): Boolean!
 }
 
 type Query {
-  login(input: AuthLoginInput!): loginResult!
+  login(input: AuthLoginInput!): LoginResult!
 }
 
 type User {
@@ -27,9 +32,4 @@ type User {
   isDeleted: Boolean!
   isEmailVerified: Boolean!
   password: String!
-}
-
-type loginResult {
-  authToken: String
-  user: User
 }
