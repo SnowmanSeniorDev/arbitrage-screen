@@ -33,6 +33,11 @@ export class UsersService {
     return user;
   }
 
+  async updateUserEmailVerify(email: string): Promise<void> {
+    const user = await this.findOne(email);
+    await this.userRepository.update(user.id, { isEmailVerified: true });
+  }
+
   async findOne(email: string): Promise<User> {
     return this.userRepository.findOne({ where: { email } });
   }
